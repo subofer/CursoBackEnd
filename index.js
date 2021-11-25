@@ -12,8 +12,16 @@ const server = app.listen(process.env.PORT  || 3000, () => {
 
 
 server.on("error", error => console.log(`El servidor ha sufrido un error ${error}`))
+
 app.get('/', (request, response) => {
-    response.send("Los metodos son /productos, /productoRandom y /archivo ")
+    response.send(`
+        <h1 style='color:blue;'>
+                Los metodos son /productos, /productoRandom y /archivo
+                <a href="./productos">Productos</a>
+                <a href="./productoRandom">Producto Random</a>
+                <a href="./archivo">Archivo</a>
+        </h1>`
+    )
 })
 
 app.get('/productos', (request, response) => {
