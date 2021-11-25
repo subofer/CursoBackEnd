@@ -27,11 +27,23 @@ app.get('/', (request, response) => {
 })
 
 app.get('/productos', (request, response) => {
-    response.send(contenedor.getAll())
+    response.send(`
+        <div style='display:flex; justify-content: flex-start; gap:1rem; font-Family: "Poxima nova", text-decoration:none';>
+            <a href="./productoRandom">Todos los Productos</a>
+                ${contenedor.getAll()}
+
+        </div>`
+    )
 })
 
 app.get('/productoRandom', (request, response) => {
-    response.send(contenedor.getRandomId())
+    response.send(`
+        <div style='display:flex; justify-content: flex-start; gap:1rem; font-Family: "Poxima nova", text-decoration:none';>
+            <a href="./productoRandom">Producto Random</a>
+                ${contenedor.getRandomId()}
+
+        </div>`
+    )
 })
 
 
