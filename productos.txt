@@ -1,0 +1,1 @@
+"[{\"id\":1,\"producto\":{\"title\":\"Peras\",\"precio\":50,\"tumbnail\":\"imagen1\"}},{\"id\":2,\"producto\":{\"title\":\"banana\",\"precio\":123,\"tumbnail\":\"imagen2\"}},{\"id\":5,\"producto\":{\"title\":\"manzana\",\"precio\":34,\"tumbnail\":\"imagen2\"}},{\"id\":8,\"producto\":{\"title\":\"naranja\",\"precio\":65,\"tumbnail\":\"imagen4\"}}]"
