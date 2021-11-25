@@ -4,12 +4,16 @@ const app = express()
 
 const contenedor = new Contenedor("productos.txt")
 
+
+var server_port = process.env.YOUR_PORT || process.env.PORT || 5000;
+var server_host = process.env.YOUR_HOST || '0.0.0.0';
+
 contenedor.getFile()
 
 
 contenedor.getFile().then( () =>{
     
-    const server = app.listen(process.env.PORT || 5000, () => {
+    const server = app.listen(server_port, server_host, () => {
         console.log(`El servidor esta escuchando en el puerto: ${server.address().port}`)
         console.log(`La 'base de datos' cargo con exito ${contenedor.getAll().length} registros`)
     })
