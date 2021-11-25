@@ -6,22 +6,42 @@ const contenedor = new Contenedor("productos.txt")
 
 contenedor.getFile()
 
-const server = app.listen(process.env.PORT  || 3000, () => {
+const server = app.listen(3005, () => {
     console.log(`El servidor esta escuchando en el puerto: ${server.address().port}`)
 })
 
-
+console.log(contenedor.getAll())
 server.on("error", error => console.log(`El servidor ha sufrido un error ${error}`))
 
 app.get('/', (request, response) => {
+    
+    let randomIdProduct = contenedor.getRandomId()
+
+    let productList = contenedor.getAll().map(item => (randomIdProduct.id == item.id ? ">>>" : "---") + JSON.stringify(item) +"<br></br>" ).join("")
+
+
     response.send(`
-        <div style='display:flex; justify-content: flex-start; gap:1rem; font-Family: "Poxima nova", text-decoration:none';>
+        <div style='display:flex; flex-direction:column; justify-content: flex-start; gap:1rem; font-Family: "Poxima nova", text-decoration:none';>
             <h1 style='color:blue;'> Los metodos son /productos, /productoRandom y /archivo </h1>
             
-            <a href="./productos">Productos</a>
-            <a href="./productoRandom">Producto Random</a>
-            <a href="./archivo">Archivo</a>
-
+            <div style='display:flex; flex-direction:column; justify-content: flex-start; gap: 3rem;'>
+                
+                <a style='border:1px solid grey; padding:2rem;' href="/">Refrescar</a>
+                
+                
+                <div style='display:flex; flex-direction:row; justify-content: flex-start;  padding:2rem; border:1px solid grey; gap:2rem; '>
+                <a style='width:25%;' href="./productos">Productos--->>></a>  
+                    ${productList}
+                </div>
+                
+                <div style='display:flex; flex-direction:row; justify-content: flex-start; padding:2rem; border:1px solid grey;gap:2rem;'>
+                    <a href="./productoRandom">Producto Random--->>></a>
+                    ${JSON.stringify(randomIdProduct)}
+                
+                </div>
+                
+            <a style='border:1px solid grey; padding:2rem;' href="./archivo/archivo.txt">Archivo</a>
+            </div>
         </div>`
     )
 })
@@ -29,7 +49,7 @@ app.get('/', (request, response) => {
 app.get('/productos', (request, response) => {
     response.send(`
         <div style='display:flex; justify-content: flex-start; gap:1rem; font-Family: "Poxima nova", text-decoration:none';>
-            <a href="./productoRandom">Todos los Productos</a>
+            <a href="./productos">Todos los Productos</a>
                 ${JSON.stringify(contenedor.getAll())}
 
         </div>`
