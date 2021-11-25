@@ -2,13 +2,11 @@ const express = require('express')
 const Contenedor = require('./contenedor')
 const app = express()
 
-const PORT= 3000;
-
 const contenedor = new Contenedor("productos.txt")
 
 contenedor.getFile()
 
-const server = app.listen(PORT || 80, () => {
+const server = app.listen(process.env.PORT  || 3000, () => {
     console.log(`El servidor esta escuchando en el puerto: ${server.address().port}`)
 })
 
