@@ -6,18 +6,23 @@ const contenedor = new Contenedor("productos.txt")
 
 contenedor.getFile()
 
-const server = app.listen(3000, () => {
-    console.log(`El servidor esta escuchando en el puerto: ${server.address().port}`)
-})
-
-server.on("error", error => console.log(`El servidor ha sufrido un error ${error}`))
 
 contenedor.getFile().then( () =>{
+    
+    const server = app.listen(3000, () => {
+        console.log(`El servidor esta escuchando en el puerto: ${server.address().port}`)
+        console.log(`La 'base de datos' cargo con exito ${contenedor.getAll().length} registros`)
+    })
+    
+    server.on("error", error => console.log(`El servidor ha sufrido un error ${error}`))
+    
     app.get('/', (request, response) => {
-
+        
         let rProduct = contenedor.getRandomId()
         let pshow = JSON.stringify(rProduct)
     
+        
+        
         let productList = contenedor
         .getAll()
         .map(   
