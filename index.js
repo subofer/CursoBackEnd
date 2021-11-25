@@ -10,14 +10,29 @@ const server = app.listen(3000, () => {
     console.log(`El servidor esta escuchando en el puerto: ${server.address().port}`)
 })
 
-console.log(contenedor.getAll())
 server.on("error", error => console.log(`El servidor ha sufrido un error ${error}`))
 
-app.get('/', (request, response) => {
-    
-    let randomIdProduct = contenedor.getRandomId()
+contenedor.getFile().then( () =>{
+    app.get('/', (request, response) => {
 
-    let productList = contenedor.getAll().map(item => (randomIdProduct.id == item.id ? ">>>" : "---") + JSON.stringify(item) +"<br></br>" ).join("")
+        let rProduct = contenedor.getRandomId()
+        let pshow = JSON.stringify(rProduct)
+    
+        let productList = contenedor
+        .getAll()
+        .map(   
+            item => 
+              {   
+                let selected = rProduct.id == item.id
+                let style = selected? "border:1px solid red " : ""
+                return`
+                    <div style="${style};padding:15px;" >
+                        ${(selected ? ">>>" : "---")} ${JSON.stringify(item)} 
+                    </div>
+                `
+        })
+        .join( "<br/>" )
+   
 
 
     response.send(`
@@ -26,24 +41,35 @@ app.get('/', (request, response) => {
             
             <div style='display:flex; flex-direction:column; justify-content: flex-start; gap: 3rem;'>
                 
-                <a style='border:1px solid grey; padding:2rem;' href="/">Refrescar</a>
+                <a style='border:1px solid grey; padding:2rem;' href="/">Random</a>
                 
                 
                 <div style='display:flex; flex-direction:row; justify-content: flex-start;  padding:2rem; border:1px solid grey; gap:2rem; '>
-                <a style='width:25%;' href="./productos">Productos--->>></a>  
-                    ${productList}
+                    
+                    <p style='width:25%;'>Productos--->>></p>
+                    
+                    <div style='display:flex; flex-direction:column; padding:15px;'>
+                        <p> ${productList} </p>    
+                    </div>
+                
                 </div>
                 
                 <div style='display:flex; flex-direction:row; justify-content: flex-start; padding:2rem; border:1px solid grey;gap:2rem;'>
-                    <a href="./productoRandom">Producto Random--->>></a>
-                    ${JSON.stringify(randomIdProduct)}
+                    
+                    <p style='width:25%;'>Producto Random--->>></p>
                 
+                    <div style='display:flex; flex-direction:column; padding:15px;'>
+                            <p> ${pshow} </p>    
+                    </div>
+              
                 </div>
                 
-            <a style='border:1px solid grey; padding:2rem;' href="./archivo/archivo.txt">Archivo</a>
+            <a style='border:1px solid grey; padding:2rem;' href="./archivo/productos.txt">Descargar Archivo</a>
             </div>
         </div>`
     )
+})
+
 })
 
 app.get('/productos', (request, response) => {
@@ -67,8 +93,8 @@ app.get('/productoRandom', (request, response) => {
 })
 
 
-app.get('/archivo', (request, response) => {
-    response.sendFile(__dirname + '/productos.txt');
+app.get('/archivo/:fileName', (request, response) => {
+    response.sendFile(__dirname +'/' + request.params.fileName);
 })
 
 
