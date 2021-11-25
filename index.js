@@ -8,13 +8,15 @@ const contenedor = new Contenedor("productos.txt")
 
 contenedor.getFile()
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT || 80, () => {
     console.log(`El servidor esta escuchando en el puerto: ${server.address().port}`)
 })
 
 
 server.on("error", error => console.log(`El servidor ha sufrido un error ${error}`))
-
+app.get('/', (request, response) => {
+    response.send("Los metodos son /productos, /productoRandom y /archivo ")
+})
 
 app.get('/productos', (request, response) => {
     response.send(contenedor.getAll())
