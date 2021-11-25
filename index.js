@@ -6,7 +6,7 @@ const contenedor = new Contenedor("productos.txt")
 
 contenedor.getFile()
 
-const server = app.listen(3005, () => {
+const server = app.listen(3000, () => {
     console.log(`El servidor esta escuchando en el puerto: ${server.address().port}`)
 })
 
