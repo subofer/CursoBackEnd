@@ -30,7 +30,7 @@ app.get('/productos', (request, response) => {
     response.send(`
         <div style='display:flex; justify-content: flex-start; gap:1rem; font-Family: "Poxima nova", text-decoration:none';>
             <a href="./productoRandom">Todos los Productos</a>
-                ${contenedor.getAll()}
+                ${JSON.stringify(contenedor.getAll())}
 
         </div>`
     )
@@ -40,7 +40,7 @@ app.get('/productoRandom', (request, response) => {
     response.send(`
         <div style='display:flex; justify-content: flex-start; gap:1rem; font-Family: "Poxima nova", text-decoration:none';>
             <a href="./productoRandom">Producto Random</a>
-                ${contenedor.getRandomId()}
+                ${JSON.stringify(contenedor.getRandomId())}
 
         </div>`
     )
