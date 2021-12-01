@@ -10,18 +10,18 @@ class Archivo{
     }
 
     save = async (objetc) =>
-        fs.readFile(this.filename, 'utf8')
+        await fs.readFile(this.filename, 'utf8')
             .then(console.log)
             .catch(e => this.createFile())
-            .finally(() => this.addToFile(this.str(objetc)) )
+            .finally(() => this.createFile(this.str(objetc)) )
     
     readFile = async () => 
         fs.readFile(this.filename, 'utf8')
             .then(data => this.data = JSON.parse(data))
             .catch(err => console.log("Fallo la lectura"))
 
-    createFile = async () =>
-        fs.writeFile(this.filename, '', 'utf8' )
+    createFile = async (prod) =>
+        fs.writeFile(this.filename, prod, 'utf8' )
             .then(() => console.log('Se Creo el archivo'))
             .catch(err => console.log("error de escritura", err))
 

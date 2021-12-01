@@ -1,4 +1,5 @@
 const Archivo = require('./Archivos')
+const R = require('ramda')
 
 class Contenedor{
     constructor(filename, priceList=false, wrieFileOnCreation=false){
@@ -11,29 +12,47 @@ class Contenedor{
         wrieFileOnCreation && this.write()
 
     }
-
+    sortById = () => this.fileList.sort((a,b) => a.id - b.id)
     getId = () => this.lastId ++
     
-    write = () => this.file.save(this.fileList)
+    write = async () => await this.file.save(this.fileList)
     
-    save = (object) => this.fileList.push({id:this.getId() , producto:object})
+    save = (object, id = false) => {
+        console.log(object)
+        let idtoUse = id || this.getId()
+        this.fileList.push({id:idtoUse , producto:object})
+        console.log(this.fileList)
+        return idtoUse
+    }
 
     generate = (listado) => listado.forEach( item => this.save(item) )
 
-    saveAndWrite = (objetct) => this.save(objetct) && this.write()
+    saveAndWrite = async (objetct,id =false) => {
+        id ? this.deletById(id) : null
+        let idUsed = this.save(objetct, id)
+        this.sortById()
+        await this.write()
+        return this.getById(idUsed)
+    }
 
     getAll = () => this.fileList
     
     getById = (id) => this.fileList.find(element => element.id == id) || null
     
-    deletById = (id) => this.fileList = this.fileList.filter(element => element.id != id)
+    deletById = async (id) => {
+        let largo = this.fileList.length
+        this.fileList = this.fileList.filter(element => element.id != id)
+        await this.saveAndWrite()
+        return this.fileList.length - largo == 0
+    }
 
     deleteAll = () => this.fileList = []
 
     getFile = async () => {
         try{
             await this.file.readFile()
-            this.fileList = JSON.parse(this.file.data)
+            this.fileList = this.file.data
+            this.lastId = Math.max(...this.listIdsDisponibles()) + 1
         }catch(e){
             console.log(e)
         }
@@ -48,3 +67,5 @@ class Contenedor{
 }
 
 module.exports = Contenedor
+
+
