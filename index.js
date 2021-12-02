@@ -1,5 +1,9 @@
+console.time("inicio")
+console.timeLog("inicio",`\x1b[41m Comienza la carga del servicio \x1b[0m`)
+
 const express = require('express')
 const Contenedor = require('./contenedor')
+
 const app = express()
 
 const { Router } = express
@@ -12,15 +16,29 @@ const contenedor = new Contenedor("productos.txt")
 var server_port = process.env.YOUR_PORT || process.env.PORT || 5000;
 var server_host = process.env.YOUR_HOST || '0.0.0.0';
 
-contenedor.getFile()
+console.timeLog("inicio",` \x1b[93m Importaciones y seteos \x1b[0m`)
+
+/*
+for (let i = 30; i < 99; i++) {
+    console.timeLog("inicio",` \x1b[${i}m COLOR NUMERO: ${i} \x1b[0m`)
+}
+*/
+
+console.timeLog("inicio",`Primer lectura de la base`)
 
 app.use( express.urlencoded({extended:true}) ) ;
 
     const server = app.listen(server_port, server_host,async () => {
+        
+        console.timeLog("inicio",`\x1b[32m El servidor esta escuchando en el puerto: ${server.address().port} \x1b[0m`)
         await contenedor.getFile()
-        console.log(`El servidor esta escuchando en el puerto: ${server.address().port}`)
-        console.log(`La 'base de datos' cargo con exito ${contenedor.getAll().length} registros`)
-        console.log(`Base : ${contenedor.getAll().map(item => JSON.stringify(item))}`)
+
+        
+
+        console.timeLog("inicio",`\x1b[32m La 'base de datos' cargo con exito ${contenedor.getAll().length} registros \x1b[0m`)
+        console.timeLog("inicio",`Base : ${JSON.stringify(contenedor.getAll())}`)
+        
+        console.timeEnd("inicio", "Cargando y listo")
     })
     
     server.on("error", error => console.log(`El servidor ha sufrido un error ${error}`))
@@ -29,6 +47,7 @@ app.use( express.urlencoded({extended:true}) ) ;
         await contenedor.getFile()
         response.send('Todos los productos : ' + JSON.stringify(contenedor.getAll()))
     })
+    
     router.get('/productos/:id', (request, response) => {
         response.sendFile(
             'Producto pedido : ' + JSON.stringify(contenedor.getById(request.params.id) || {id:0, product:{title:"El articulo no existe", tumbnail:"Sin objeto"}}))
@@ -78,8 +97,6 @@ app.use( express.urlencoded({extended:true}) ) ;
     router.delete('/producto/:id',  (request, response) => {
         contenedor.deletById(request.params.id)
         .then(resp => response.send(resp ? "Se Elimino :" + request.params.id: "no se elimino"))
-        
-        
     })
 
     app.use('/api', router)
