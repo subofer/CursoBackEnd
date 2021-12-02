@@ -16,7 +16,7 @@ class Archivo{
             .finally(() => this.createFile(this.str(objetc)) )
     
     readFile = async () => 
-        fs.readFile(this.filename, 'utf8')
+        await fs.readFile(this.filename, 'utf8')
             .then(data => this.data = JSON.parse(data))
             .catch(err => console.log("Fallo la lectura"))
 
