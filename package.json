@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "heroku": "^7.59.2"
+    "handlebars": "^4.7.7",
+    "heroku": "^7.59.2",
+    "pug": "^3.0.2"
   }
 }

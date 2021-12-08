@@ -6,6 +6,37 @@ const Contenedor = require('./contenedor')
 
 const app = express()
 
+let templatesDir = __dirname + '/templates/'
+//Pug o Hbs
+let use = {
+    pug:{engine:"pug", useEngine:false, dir:templatesDir + 'pug', ext:"pug", extname:".pug"},
+    hbs:{engine:"express-handlebars", useEngine:true, dir:templatesDir + 'handlebars', ext:"hbs", extname:".hbs"}
+}.hbs
+
+
+
+
+if(use.useEngine){
+    const templateEngine = require(use.engine);
+    
+    app.engine(
+        "hbs",
+        templateEngine.engine({
+            extname: use.extname,
+            partialsDir: __dirname + use.dir
+        })
+    )
+}
+
+app.set('views', use.dir)
+app.set('views engine', use.ext)
+
+
+
+
+
+
+
 const { Router } = express
 const body_parser = require('body-parser');
 
@@ -18,11 +49,6 @@ var server_host = process.env.YOUR_HOST || '0.0.0.0';
 
 console.timeLog("inicio",` \x1b[93m Importaciones y seteos \x1b[0m`)
 
-/*
-for (let i = 30; i < 99; i++) {
-    console.timeLog("inicio",` \x1b[${i}m COLOR NUMERO: ${i} \x1b[0m`)
-}
-*/
 
 console.timeLog("inicio",`Primer lectura de la base`)
 
@@ -42,7 +68,13 @@ app.use( express.urlencoded({extended:true}) ) ;
     })
     
     server.on("error", error => console.log(`El servidor ha sufrido un error ${error}`))
-   
+    
+    app.get('/', async (request, response) => {
+        await contenedor.getFile()
+        return response.render('index' + use.extname, contenedor.getAll());
+    })
+
+
     router.get('/productos', async (request, response) => {
         await contenedor.getFile()
         response.send('Todos los productos : ' + JSON.stringify(contenedor.getAll()))
@@ -50,7 +82,7 @@ app.use( express.urlencoded({extended:true}) ) ;
     
     router.get('/productos/:id', (request, response) => {
         response.sendFile(
-            'Producto pedido : ' + JSON.stringify(contenedor.getById(request.params.id) || {id:0, product:{title:"El articulo no existe", tumbnail:"Sin objeto"}}))
+            'Producto pedido : ' + JSON.stringify(contenedor.getById(request.params.id) || {id:0, product:{title:"El articulo no existe", thumbnail:"Sin objeto"}}))
     })
 
     router.get('/getproducto', (request, response) => {
@@ -62,9 +94,10 @@ app.use( express.urlencoded({extended:true}) ) ;
             {
                 "title"    : request.body.title,
                 "precio"   : request.body.precio,
-                "tumbnail" : request.body.tumbnail
+                "thumbnail" : request.body.thumbnail
             }
-        ).then(res => response.send(res) )
+        ).then(res => response.redirect("/") )
+       
     })
 
     router.post('/producto/:id',  (request, response) => {
@@ -72,7 +105,7 @@ app.use( express.urlencoded({extended:true}) ) ;
             {
                 "title":request.body.title,
                 "precio":request.body.precio,
-                "tumbnail":request.body.tumbnail
+                "thumbnail":request.body.thumbnail
             }
             ,parseInt(request.params.id) || false
         
@@ -87,7 +120,7 @@ app.use( express.urlencoded({extended:true}) ) ;
             {
                 "title":request.body.title,
                 "precio":request.body.precio,
-                "tumbnail":request.body.tumbnail
+                "thumbnail":request.body.thumbnail
             }
             ,parseInt(request.params.id) || false
         
@@ -102,7 +135,7 @@ app.use( express.urlencoded({extended:true}) ) ;
     app.use('/api', router)
 
 
-    app.get('/', (request, response) => {
+    app.get('/weird', (request, response) => {
         
         let rProduct = contenedor.getRandomId()
         let pshow = JSON.stringify(rProduct)
@@ -155,7 +188,7 @@ app.use( express.urlencoded({extended:true}) ) ;
                         </div>
                         <div style='display:flex; flex-direction:row;'>
                             <h3>Foto</h3>
-                            <input type="text" name="tumbnail"/><br/>
+                            <input type="text" name="thumbnail"/><br/>
                         </div>
                         <div style='display:flex; flex-direction:row;'>
                             <input type="submit" value="Guardar Producto"/>
@@ -184,23 +217,15 @@ app.use( express.urlencoded({extended:true}) ) ;
 
 
 app.get('/productos', (request, response) => {
-    response.send(`
-        <div style='display:flex; justify-content: flex-start; gap:1rem; font-Family: "Poxima nova", text-decoration:none';>
-            <a href="./productos">Todos los Productos</a>
-                ${JSON.stringify(contenedor.getAll())}
-
-        </div>`
-    )
+        let list = contenedor.getAll()
+        let show = list.length > 0
+        return response.render('productos' + use.extname, {list: list, showList: show});
 })
 
 app.get('/productoRandom', (request, response) => {
-    response.send(`
-        <div style='display:flex; justify-content: flex-start; gap:1rem; font-Family: "Poxima nova", text-decoration:none';>
-            <a href="./productoRandom">Producto Random</a>
-                ${JSON.stringify(contenedor.getRandomId())}
-
-        </div>`
-    )
+    let list = contenedor.getRandomId()
+    let show = list.length > 0
+    return response.render('productos' + use.extname, {list: list, showList: show});
 })
 
 

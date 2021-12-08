@@ -1,0 +1,16 @@
+<h2 class="text-primary mt-2">Ingrese datos HBS</h2>
+<form action="/api/producto" method="POST">
+  <div class="mb-3">
+    <label for="title" class="form-label">Título</label>
+    <input type="text" class="form-control" name="title" />
+  </div>
+  <div class="mb-3">
+    <label for="price" class="form-label">Precio</label>
+    <input type="number" class="form-control" name="precio" />
+  </div>
+  <div class="mb-3">
+    <label for="thumbnail" class="form-label">Link foto</label>
+    <input type="text" class="form-control" name="thumbnail" />
+  </div>
+  <button type="submit" class="btn btn-success">Guardar producto</button>
+</form>
