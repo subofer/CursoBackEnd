@@ -217,15 +217,11 @@ app.use( express.urlencoded({extended:true}) ) ;
 
 
 app.get('/productos', (request, response) => {
-        let list = contenedor.getAll()
-        let show = list.length > 0
-        return response.render('productos' + use.extname, {list: list, showList: show});
+    return response.render('productos' + use.extname, {...contenedor.getAll("template")});
 })
 
 app.get('/productoRandom', (request, response) => {
-    let list = contenedor.getRandomId()
-    let show = list.length > 0
-    return response.render('productos' + use.extname, {list: list, showList: show});
+    return response.render('productos' + use.extname, { list:contenedor.getRandomId(), showList:true});
 })
 
 

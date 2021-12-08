@@ -35,8 +35,8 @@ class Contenedor{
         return this.getById(idUsed)
     }
 
-    getAll = () => this.fileList
-    
+    getAll = (list) => !list ? this.fileList : {list:this.fileList, showList:(this.fileList.length>0)}
+
     getById = (id) => this.fileList.find(element => element.id == id) || null
     
     deletById = async (id) => {
