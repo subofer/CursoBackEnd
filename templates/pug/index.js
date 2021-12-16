@@ -1,32 +1,36 @@
-let socket = io.connect();
+let socket = io();
 
+socket.on('recienConectado', (data) => {
+  console.log("recien conectado", data)
+  renderTable(data)
+})
 
-socket.on('welcome_event', function (data) {
-  console.log("aca",data);
-  socket.emit('response_evet', { hola: 'Respuesta del cliente es esta.' });
+socket.on('productos', (data) => {
+  renderTable(data)
 });
 
-socket.on('listado_Productos', (data) => {
-  
-  let datos = JSON.parse(data.info)
-  
+const enviar = (e) => {
+  let [inputs, valores] =[ [...e.target], {} ]
+  e.preventDefault()
+  inputs.forEach(input => (input.name !="") && (valores[input.name] = input.value) )
+  socket.emit('new-product', valores)
+}
+
+const eliminar = (id) => {
+  socket.emit('eliminar', id)
+}
+
+
+const renderTable = (data) => {
   let productos = document.getElementById("productos")
-
-  productos.innerHTML = datos.map(
-    producto => `
-      <tr>
-        <th scope='row'>${producto.id}</th>
-        <th> ${producto.producto.title}</th>
-        <th> ${producto.producto.price}</th>
-        <th> ${producto.producto.thumbnail}</th>
-      `
-  ).join("</tr>")
-  
-});
-
-function enviar(e){
-    e.preventDefault()
-    let [inputs, valores] =[ [...e.target.form], {} ]
-    inputs.forEach(input => (input.name !="") && (valores[input.name] = input.value) )
-    console.log(valores)
-  }
+  productos.innerHTML = data.map(
+    producto => 
+      `<tr>
+          <th scope='row'>${producto.id}</th>
+          <td> ${producto.producto.title}</td>
+          <td> ${producto.producto.precio}</td>
+          <td> ${producto.producto.thumbnail}</td>
+          <td> <button onclick='eliminar(${producto.id})'>x</button></td>
+      </tr>`
+    ).join("")
+}

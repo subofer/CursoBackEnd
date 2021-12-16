@@ -13,7 +13,7 @@ class Contenedor{
 
     }
     sortById = () => this.fileList.sort((a,b) => a.id - b.id)
-    getId = () => this.lastId ++
+    getId = () => this.lastId ++ || 1
     
     write = async () => await this.file.save(this.fileList)
     
@@ -44,6 +44,12 @@ class Contenedor{
         this.fileList = this.fileList.filter(element => element.id != id)
         await this.saveAndWrite()
         return this.fileList.length - largo == 0
+    }
+
+    removeById = async (id) => {
+        this.fileList = this.fileList.filter(element => element.id != id)
+        await this.write()
+        return this.fileList
     }
 
     deleteAll = () => this.fileList = []

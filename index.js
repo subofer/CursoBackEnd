@@ -1,28 +1,7 @@
 console.time("inicio")
 console.timeLog("inicio",`\x1b[41m Comienza la carga del servicio \x1b[0m`)
 
-var server_port = process.env.YOUR_PORT || process.env.PORT || 5000;
-var server_host = process.env.YOUR_HOST || '0.0.0.0';
-
-const express = require('express')
-
-const { Server: HttpServer } = require('http')
-const { Server: IOServer } = require('socket.io')
-
-
-const app = express()
-const httpServer = new HttpServer(app)
-const io = new IOServer(httpServer)
-
-
-const Contenedor = require('./contenedor')
-const contenedor = new Contenedor("productos.txt")
-
-const { Router } = express
-const body_parser = require('body-parser');
-
-const router = Router()
-
+//Templates engine///////////////////////////////////////////////////
 let templatesDir = __dirname + '/templates/'
 //Pug o Hbs
 let use = {
@@ -41,6 +20,36 @@ if(use.useEngine){
         })
     )
 }
+////////////////////////////////////////////////////////////////////
+
+//env
+var server_port = process.env.YOUR_PORT || process.env.PORT || 5000;
+var server_host = process.env.YOUR_HOST || '0.0.0.0';
+
+const express = require('express')
+
+const { Server: HttpServer } = require('http')
+const { Server: IOServer } = require('socket.io')
+
+
+const app = express()
+const httpServer = new HttpServer(app)
+const io = new IOServer(httpServer)
+
+
+const Contenedor = require('./contenedor')
+const contenedor = new Contenedor("productos.txt")
+
+/*
+// const router = express.Router()
+const { Router } = express
+const router = Router()
+*/
+
+const body_parser = require('body-parser');
+
+
+
 
 console.timeLog("inicio",` \x1b[93m Importaciones y seteos \x1b[0m`)
 console.timeLog("inicio",`Primer lectura de la base`)
@@ -49,22 +58,36 @@ app.set('views', use.dir)
 app.set('views engine', use.ext)
 app.use( express.urlencoded({extended:true}) ) ;
 
-//app.use(express.static("./public"))
-
 
 httpServer.listen(3000, function(){
     console.log("Http Server runing")
 })
 
-
-
-io.on("connection", () => {
-    console.log("se conecto")
-})
-
 app.get('/', async (request, response) => {
     await contenedor.getFile()
     return response.render('index' + use.extname, {...contenedor.getAll("template")});
+})
+
+io.on("connection", (socket) => {
+
+    io.sockets.emit('recienConectado', contenedor.getAll())
+    
+    socket.on('new-product', (data) => {
+        console.log("data",data) //Aca salvo el producto que ya me esta llegandoooooooooo
+        contenedor.saveAndWrite(
+            {
+                "title"    : data.title,
+                "precio"   : data.price,
+                "thumbnail" : data.thumbnail
+            }
+        ).then(res => io.sockets.emit('productos', contenedor.getAll() ) )
+    })
+
+    socket.on('eliminar', (id) =>{
+        contenedor.removeById(id)
+        .then(res => io.sockets.emit('productos', contenedor.getAll()) )
+    })
+    
 })
 
 
