@@ -37,19 +37,14 @@ const httpServer = new HttpServer(app)
 const io = new IOServer(httpServer)
 
 
-const Contenedor = require('./contenedor')
-const contenedor = new Contenedor("productos.txt")
+const Contenedor = require('./modules/contenedor')
+const contenedor = new Contenedor("productos")
 
-/*
-// const router = express.Router()
 const { Router } = express
 const router = Router()
-*/
+
 
 const body_parser = require('body-parser');
-
-
-
 
 console.timeLog("inicio",` \x1b[93m Importaciones y seteos \x1b[0m`)
 console.timeLog("inicio",`Primer lectura de la base`)
@@ -58,34 +53,44 @@ app.set('views', use.dir)
 app.set('views engine', use.ext)
 app.use( express.urlencoded({extended:true}) ) ;
 
+const ChatService = require('./modules/ChatService')
+const serverChat = new ChatService('./dbs/chats.txt')
+
+
+app.get('/', async (request, response) => {
+    return response.render('index' + use.extname, await {...contenedor.getAll("template")});
+})
 
 httpServer.listen(server_port, function(){
     console.log("Http Server runing")
 })
 
-app.get('/', async (request, response) => {
-    await contenedor.getFile()
-    return response.render('index' + use.extname, {...contenedor.getAll("template")});
-})
+io.on("connection", async (socket) => {
 
-io.on("connection", (socket) => {
+    io.sockets.emit('recienConectado', await contenedor.getAll())
 
-    io.sockets.emit('recienConectado', contenedor.getAll())
+    io.sockets.emit('chat', serverChat.getChat())
+
     
     socket.on('new-product', (data) => {
         console.log("data",data) //Aca salvo el producto que ya me esta llegandoooooooooo
-        contenedor.saveAndWrite(
+        contenedor.save(
             {
                 "title"    : data.title,
                 "precio"   : data.price,
                 "thumbnail" : data.thumbnail
             }
-        ).then(res => io.sockets.emit('productos', contenedor.getAll() ) )
+        ).then(async res => io.sockets.emit('productos', await contenedor.getAll()) )
     })
 
     socket.on('eliminar', (id) =>{
         contenedor.removeById(id)
-        .then(res => io.sockets.emit('productos', contenedor.getAll()) )
+        .then(async res => io.sockets.emit('productos', await contenedor.getAll()) )
+    })
+
+    socket.on('chatMessage', async (msg) =>{
+        let mensajes = await serverChat.addMsg(msg)
+        io.sockets.emit('chat', mensajes)
     })
     
 })
@@ -121,9 +126,14 @@ app.get('/archivo/:fileName', (request, response) => {
     response.sendFile(__dirname +'/' + request.params.fileName);
 })
 
-
+*/
 // Router
 app.use('/api', router)
+
+router.post('/productos', async (request, response) => {
+    await contenedor.getFile()
+    return response.render('index' + use.extname, {...contenedor.getAll("template")});
+})
 
 router.post('/producto',  (request, response) => {
     contenedor.saveAndWrite(
@@ -151,4 +161,3 @@ router.delete('/producto/:id',  (request, response) => {
     contenedor.deletById(request.params.id)
     .then(resp => response.send(resp ? "Se Elimino :" + request.params.id: "no se elimino"))
 })
-*/

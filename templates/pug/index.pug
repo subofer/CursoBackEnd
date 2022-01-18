@@ -32,12 +32,26 @@ html(lang='en')
     h2.text-danger.mt-4 Productos cargados PUG
     table.table
       thead
-        th(scope='col') #
-        th(scope='col') Título
-        th(scope='col') Precio
-        th(scope='col') URL imagen
+        tr
+          th(scope='col') #
+          th(scope='col') Título
+          th(scope='col') Precio
+          th(scope='col') URL imagen
         tbody(id='productos')
-        
+    
+    div.chat  
+      h3 Let's go Chat UWU!
+      table.table.table-dark.table-bordered(id='tablaChat')
+        thead
+          tr
+            th(scope='col' class='col-2') Horario
+            th(scope='col' class='col-1') Usuario 
+            th(scope='col' class='col-9') Mensaje
+          tbody(id='chatWindows')
+      input(type='text' id='userName')
+      input(type='text' id='chatInput')
+      button(onclick='sendChatMessage(event)') Enviar
+    
     script
       include index.js
 

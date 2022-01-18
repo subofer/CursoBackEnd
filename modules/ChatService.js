@@ -1,10 +1,20 @@
 const fs = require('fs').promises
 
-class Archivo{
+class ChatService{
     constructor(filename){
         this.filename = filename;
-        this.data = ""
+        this.data = []
+        this.readFile()
     }
+    
+    addMsg = async (msg) => {
+      this.data.push(msg)
+      await this.save(this.data)
+      return this.data
+    }
+
+    getChat = () => this.data;
+
     str(json){
         return JSON.stringify(json)
     }
@@ -32,4 +42,4 @@ class Archivo{
 
 }
 
-module.exports = Archivo
+module.exports = ChatService
