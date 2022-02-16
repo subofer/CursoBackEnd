@@ -1,3 +1,8 @@
+const cluster = require(`cluster`)
+const numCPUs = require(`os`).cpus().length *2
+
+console.log('tienes ', numCPUs, 'nucleos')
+
 console.time("inicio")
 console.timeLog("inicio",`\x1b[41m Comienza la carga del servicio \x1b[0m`)
 
@@ -33,9 +38,9 @@ const { Server: IOServer } = require('socket.io')
 
 
 const app = express()
+
 const httpServer = new HttpServer(app)
 const io = new IOServer(httpServer)
-
 
 const Contenedor = require('./modules/contenedor')
 const contenedor = new Contenedor("productos")
