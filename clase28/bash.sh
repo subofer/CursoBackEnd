@@ -1,1 +1,0 @@
-echo Ejecuta el Bash
